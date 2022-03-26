@@ -2,10 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 
-a = 1 #4 Gamma_eff / L in PhysRevA
-
-def rmb(n,t):
+def rhs(n,t,a=1):
     #n : Array of coordinates n_k
+    #a : 4*Gamma_eff/L in PhysRevA
     N=len(n)
     R=[0]*N #To return
     for k in range(N):
@@ -15,24 +14,21 @@ def rmb(n,t):
         R[k]=-a*s
     return(R)
 
-def plot_multin(n_ini):
-    #Number of lattice sites built-in in the n_ini arg
-    t = np.linspace(0,100,10000)
-    n = odeint(rmb, n_ini, t)
+def plot_(list_n_ini, funcs=[], t_ini=0, t_fin=100, nb_t=10000, displayed_sites=[], a=1):
+    # We plot for multiple n_ini ; nb_sites is built-in in the len(n_ini[i]), which are assumed to all be the same
+    # kwarg funcs : optionally, other functions to be plotted for comparison
+    # kwargs t_ini, t_fin, t_nb : settings for t linspace
+    # kwarg displayed_sites : choose which n_k to display (if a n_k is displayed, then it is displayed for all n_ini). [] means displaying all sites.
+    # kwarg a : a for rmb
+    if displayed_sites==[]:
+        displayed_sites = list(range(len(list_n_ini[0])))
+    t = np.linspace(t_ini,t_fin,nb_t)
     plt.xscale('log')
     plt.yscale('log')
-    for i in range(len(n[0])):
-        plt.plot(t, np.array([x[i] for x in n]),label=f'$n_'+str(i)+'$')
+    for n_ini in list_n_ini:
+        n = odeint(rhs, n_ini, t, args=(a,))
+        for i in displayed_sites:
+            plt.plot(t, np.array([x[i] for x in n]),label=f'$n_'+str(i)+'$'+r', $n_{ini}$='+str(n_ini))
     plt.legend()
     plt.show()
-
-def plot_multiini(list_n_ini_0,nb_sites):
-    t = np.linspace(0,100,10000)
-    plt.xscale('log')
-    plt.yscale('log')
-    for n_ini_0 in list_n_ini_0:
-        n_ini = [n_ini_0]*nb_sites
-        n = odeint(rmb, n_ini, t)
-        plt.plot(t, np.array([x[0] for x in n]),label=str(n_ini_0))
-    plt.legend()
-    plt.show()
+            

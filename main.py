@@ -32,6 +32,7 @@ def plot_(list_n_ini, funcs=[], funcs_names=[], t_ini=0, t_fin=100, nb_t=10000, 
             plt.plot(t, np.array([x[i] for x in n]),label=f'$n_'+str(i)+'$'+r', $n_{ini}$='+str(n_ini))
     for i in range(len(funcs)):
             plt.plot(t, funcs[i](t),label=funcs_names[i])
+    plt.xlabel('t')
     plt.legend()
     plt.show()
             
@@ -48,9 +49,21 @@ def plot_tot(list_n_ini, funcs=[], funcs_names=[], t_ini=0, t_fin=100, nb_t=1000
     plt.yscale('log')
     for n_ini in list_n_ini:
         n = odeint(rhs, n_ini, t, args=(a,))
-        for i in displayed_sites:
-            plt.plot(t, np.array([sum(x) for x in n]),label=f'$n_'+str(i)+'$'+r', $n_{ini}$='+str(n_ini))
+        plt.plot(t, np.array([sum(x) for x in n]),label=r'$n_{tot}$'+r', $n_{ini}$='+str(n_ini))
     for i in range(len(funcs)):
             plt.plot(t, funcs[i](t),label=funcs_names[i])
+    plt.xlabel('t')
     plt.legend()
     plt.show()
+
+# Some functions and their names that we'll use for comparison
+
+def func1(t):
+    return(1/t)
+
+func1_name = r'1/t'
+
+def func2(t):
+    return(1/np.sqrt(t))
+
+func2_name = r'$1/\sqrt{t}$'
